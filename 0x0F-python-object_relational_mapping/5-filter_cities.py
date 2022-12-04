@@ -1,32 +1,36 @@
 #!/usr/bin/python3
-"""
-takes in the name of a state as an argument and
-lists all cities of that state, using the database hbtn_0e_4_usa
-takes 4 arguments: mysql username, mysql password, database name
-and state name (SQL injection free!)
+""" This module takes the name of a state as argument and displays all cities
+    of that state, using the database hbtn_0e_0_usa
 """
 
-import sys
 import MySQLdb
+import sys
 
 
-def state_cities():
-    """ defining func """
+def main():
+    """
+        Entry point to the program:
+        creates a database connection and performs operations on
+        the databse.
+    """
 
-    conn = MySQLdb.connect(host='localhost', port=3306,
-                           user=sys.argv[1], passwd=sys.argv[2], db=sys.argv[3])
+    # Create a database connection
+    conn = MySQLdb.connect(
+                host="localhost", port=3306, user=sys.argv[1],
+                passwd=sys.argv[2], db=sys.argv[3], charset="utf8mb4"
+            )
     cur = conn.cursor()
+    # Select states
+    state_name = sys.argv[4]
     cur.execute(
-        """SELECT cities.name from states
-                INNER JOIN cities ON states.id = cities.state_id
-                WHERE states.name = '{}'
-                ORDER BY cities.id ASC""".format(sys.argv[4]))
-
-    print(", ".join([state[0] for state in cur.fetchall()]))
-
+            "SELECT name FROM cities WHERE state_id IN\
+            (SELECT id FROM states WHERE name = %s)\
+            ORDER BY cities.id", (state_name, ))
+    query_rows = cur.fetchall()
+    print(', '.join([x[0] for x in query_rows]))
     cur.close()
     conn.close()
 
 
-if __name__ == '__main__':
-    state_cities()
+if __name__ == "__main__":
+    main()

@@ -1,28 +1,35 @@
 #!/usr/bin/python3
-"""
-lists all cities from the database hbtn_0e_4_usa
-take 3 arguments: mysql username, mysql password and database name
+""" This module lists all the cities from the
+    database hbtn_0e_0_usa.
 """
 
-import sys
 import MySQLdb
+import sys
 
 
-def lst_cities():
-    """ defining func """
+def main():
+    """
+        Function containing code to select all the cities
+        from the database.
+    """
 
-    conn = MySQLdb.connect(host='localhost', port=3306,
-                           user=sys.argv[1], passwd=sys.argv[2], db=sys.argv[3])
+    # Create a database connection
+    conn = MySQLdb.connect(
+                host="localhost", port=3306, user=sys.argv[1],
+                passwd=sys.argv[2], db=sys.argv[3], charset="utf8mb4"
+            )
     cur = conn.cursor()
-    cur.execute(
-        """SELECT cities.id, cities.name, states.name 
-         FROM states 
-         INNER JOIN cities ON states.id = cities.state_id 
-         ORDER BY cities.id ASC""")
-    [print(state) for state in cur.fetchall()]
+    # Select states
+    cur.execute("SELECT cities.id,\
+                cities.name, states.name FROM cities\
+                INNER JOIN states ON\
+                cities.state_id=states.id ORDER BY cities.id")
+    query_rows = cur.fetchall()
+    for city in query_rows:
+        print(city)
     cur.close()
     conn.close()
 
 
-if __name__ == '__main__':
-    lst_cities()
+if __name__ == "__main__":
+    main()

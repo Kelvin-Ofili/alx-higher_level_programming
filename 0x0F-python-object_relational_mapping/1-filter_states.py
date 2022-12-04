@@ -1,26 +1,31 @@
 #!/usr/bin/python3
-"""
-lists all states with a name starting with N (upper N) from the database hbtn_0e_0_usa:
-takes 3 arguments: mysql username, mysql password and database name (no argument validation needed)
-Result sorted in ascending order by states.id
+""" This module filters all the states from the
+    database hbtn_0e_0_usa that start with upper N.
 """
 
-import sys
 import MySQLdb
+import sys
 
 
-def N_states():
-    """defining func"""
+def main():
+    """
+        Function containing code to filter all the states
+        from the database.
+    """
 
-    conn = MySQLdb.connect(host='localhost', port=3306,
-                           user=sys.argv[1], passwd=sys.argv[2], db=sys.argv[3])
+    # Create a database connection
+    conn = MySQLdb.connect(
+                host="localhost", port=3306, user=sys.argv[1],
+                passwd=sys.argv[2], db=sys.argv[3], charset="utf8mb4"
+            )
     cur = conn.cursor()
-    cur.execute(
-        "SELECT id, name FROM `states` WHERE name LIKE 'N%' ORDER BY id ASC")
-    [print(state) for state in cur.fetchall()]
+    # Select states
+    cur.execute("SELECT * FROM states ORDER BY id ASC")
+    query_rows = cur.fetchall()
+    [print(state) for state in query_rows if state[1][0] == "N"]
     cur.close()
     conn.close()
 
 
-if __name__ == '__main__':
-    N_states()
+if __name__ == "__main__":
+    main()
